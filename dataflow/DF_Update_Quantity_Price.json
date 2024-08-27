@@ -9,7 +9,8 @@
 						"referenceName": "DS_OrderDetailsUpdated_Input_SQL",
 						"type": "DatasetReference"
 					},
-					"name": "OrderDetails"
+					"name": "OrderDetails",
+					"description": "Import data from DS_OrderDetailsUpdated_Input_SQL "
 				}
 			],
 			"sinks": [
@@ -41,7 +42,7 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> OrderDetails",
-				"OrderDetails derive(Price = toDecimal(toFloat(Quantity) * toFloat(SinglePrice))) ~> UpdatePrice",
+				"OrderDetails derive(Price = toDecimal(toFloat(Quantity) *  toFloat(SinglePrice))) ~> UpdatePrice",
 				"UpdatePrice sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
