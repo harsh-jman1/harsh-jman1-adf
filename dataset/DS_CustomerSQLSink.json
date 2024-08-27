@@ -1,0 +1,58 @@
+{
+	"name": "DS_CustomerSQLSink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CustomerID",
+				"type": "varchar"
+			},
+			{
+				"name": "FirstName",
+				"type": "varchar"
+			},
+			{
+				"name": "LastName",
+				"type": "varchar"
+			},
+			{
+				"name": "Email",
+				"type": "varchar"
+			},
+			{
+				"name": "PhoneNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "Address",
+				"type": "varchar"
+			},
+			{
+				"name": "City",
+				"type": "varchar"
+			},
+			{
+				"name": "State",
+				"type": "varchar"
+			},
+			{
+				"name": "ZipCode",
+				"type": "varchar"
+			},
+			{
+				"name": "Country",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Customer"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

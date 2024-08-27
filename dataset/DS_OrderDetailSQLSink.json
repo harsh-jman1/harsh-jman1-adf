@@ -1,0 +1,55 @@
+{
+	"name": "DS_OrderDetailSQLSink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "OrderID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ProductID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ProductName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Quantity",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "OrderTimestamp",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Price",
+				"type": "decimal",
+				"precision": 21,
+				"scale": 2
+			},
+			{
+				"name": "CustomerID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SinglePrice",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "OrderDetail"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

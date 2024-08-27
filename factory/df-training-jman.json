@@ -1,0 +1,9 @@
+{
+	"name": "df-training-jman",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "9e9f34f5-dd5b-4456-a192-169f0c2c9766",
+		"tenantId": "2800c0a0-70e9-49be-8733-faeaa6aced99"
+	}
+}
