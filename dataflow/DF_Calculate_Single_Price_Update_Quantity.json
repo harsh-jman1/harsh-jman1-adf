@@ -5,10 +5,6 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "DS_OrderDetails_Input_SQL",
-						"type": "DatasetReference"
-					},
 					"name": "OrderDetails"
 				}
 			],
@@ -40,9 +36,7 @@
 				"          SinglePrice as decimal(10,2)",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> OrderDetails",
+				"     validateSchema: false) ~> OrderDetails",
 				"OrderDetails derive(SinglePrice = toDecimal(toFloat(Price)/toFloat(Quantity))) ~> SinglePrice",
 				"SinglePrice derive(Quantity = Quantity + 1) ~> UpdateQuantity",
 				"UpdateQuantity derive(Price = Quantity * SinglePrice) ~> UpdatePrice",

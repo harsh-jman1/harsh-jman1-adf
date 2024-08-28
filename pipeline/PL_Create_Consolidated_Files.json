@@ -41,13 +41,7 @@
 						}
 					},
 					"enableStaging": false
-				},
-				"outputs": [
-					{
-						"referenceName": "DS_OrderDetailsSink",
-						"type": "DatasetReference"
-					}
-				]
+				}
 			},
 			{
 				"name": "Copy Order Details",

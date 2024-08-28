@@ -5,10 +5,6 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "DS_OrderDetails_Input_SQL",
-						"type": "DatasetReference"
-					},
 					"name": "OrderDetails"
 				}
 			],
@@ -33,9 +29,7 @@
 				"          CustomerID as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> OrderDetails",
+				"     validateSchema: false) ~> OrderDetails",
 				"OrderDetails derive(SinglePrice = toDecimal(toFloat(Price)/toFloat(Quantity))) ~> SinglePrice",
 				"SinglePrice sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
