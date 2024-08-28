@@ -73,13 +73,7 @@
 						"disableMetricsCollection": false
 					},
 					"enableStaging": false
-				},
-				"outputs": [
-					{
-						"referenceName": "DS_OrderDetailSQLSink",
-						"type": "DatasetReference"
-					}
-				]
+				}
 			}
 		],
 		"annotations": [],
