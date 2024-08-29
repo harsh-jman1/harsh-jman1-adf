@@ -4,7 +4,7 @@
 		"description": "fetch the database from the local postgres server to azure sql server",
 		"activities": [
 			{
-				"name": "ForEach_ek5",
+				"name": "LocalToSQL",
 				"type": "ForEach",
 				"dependsOn": [],
 				"userProperties": [],
@@ -15,7 +15,7 @@
 					},
 					"activities": [
 						{
-							"name": "Copy_ek5",
+							"name": "CopyLocalToSQL",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
