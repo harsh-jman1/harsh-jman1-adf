@@ -17,6 +17,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
 					"name": "TableOutput"
 				}
 			],
@@ -28,8 +32,14 @@
 				"     format: 'table') ~> TableInput",
 				"TableInput sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> TableOutput"
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> TableOutput"
 			]
 		}
 	}

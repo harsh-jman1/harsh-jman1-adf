@@ -67,7 +67,8 @@
 											"tableName": {
 												"value": "@item().name",
 												"type": "Expression"
-											}
+											},
+											"tableSchema": "raw"
 										}
 									}
 								},

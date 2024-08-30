@@ -63,7 +63,17 @@
 							"outputs": [
 								{
 									"referenceName": "DS_SQL",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"tableName": {
+											"value": "@item().source.table",
+											"type": "Expression"
+										},
+										"tableSchema": {
+											"value": "@item().destination.table",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
