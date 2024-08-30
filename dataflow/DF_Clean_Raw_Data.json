@@ -1,0 +1,17 @@
+{
+	"name": "DF_Clean_Raw_Data",
+	"properties": {
+		"folder": {
+			"name": "Misumi"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}
