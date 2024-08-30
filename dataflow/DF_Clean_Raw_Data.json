@@ -24,14 +24,20 @@
 					"name": "TableSink"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "HashColumns"
+				}
+			],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     limit: 100,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TableInput",
-				"TableInput sink(allowSchemaDrift: true,",
+				"TableInput aggregate(groupBy(columns = sha2(256, columns())),",
+				"     column1 = ERROR_FUNCTION('')) ~> HashColumns",
+				"HashColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
