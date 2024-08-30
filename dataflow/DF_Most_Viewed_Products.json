@@ -21,7 +21,7 @@
 						"referenceName": "DS_SQL",
 						"type": "DatasetReference"
 					},
-					"name": "TableOutput"
+					"name": "TableSink"
 				}
 			],
 			"transformations": [
@@ -94,7 +94,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> TableOutput"
+				"     errorHandlingOption: 'stopOnFirstError') ~> TableSink"
 			]
 		}
 	}
