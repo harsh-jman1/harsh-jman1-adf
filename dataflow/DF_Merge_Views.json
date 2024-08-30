@@ -62,16 +62,13 @@
 					"name": "JoinCategory"
 				},
 				{
-					"name": "JoinRoles"
-				},
-				{
 					"name": "JoinRoleName"
 				},
 				{
 					"name": "SelectRequiredColumns"
 				},
 				{
-					"name": "join1"
+					"name": "JoinRolesWithMain"
 				}
 			],
 			"scriptLines": [
@@ -157,15 +154,10 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinEvent",
 				"JoinEvent, CategoryInput join(categoryId == CategoryInput@id,",
-				"     joinType:'inner',",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinCategory",
-				"JoinCategory join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> JoinRoles",
 				"UserRoleInput, RoleInput join(roleId == id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
@@ -177,11 +169,11 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectRequiredColumns",
-				"JoinRoles join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'inner',",
+				"JoinCategory, SelectRequiredColumns join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1"
+				"     broadcast: 'auto')~> JoinRolesWithMain"
 			]
 		}
 	}
