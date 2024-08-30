@@ -15,17 +15,33 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_InvoiceBlob'"
 		},
+		"LS_Postgres_Local_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_Postgres_Local'"
+		},
 		"AzureSqlDatabase1_properties_typeProperties_server": {
 			"type": "string",
 			"defaultValue": "db-server-jman.database.windows.net"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_database": {
 			"type": "string",
-			"defaultValue": "db-train-sql"
+			"defaultValue": "miniproject"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "harshadmin"
+		},
+		"LS_Postgres_Local_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "localhost"
+		},
+		"LS_Postgres_Local_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "fsmini"
+		},
+		"LS_Postgres_Local_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "postgres"
 		},
 		"containerUri": {
 			"type": "string",
@@ -60,6 +76,9 @@
 					"LS_InvoiceBlob_connectionString": {
 						"value": "[parameters('LS_InvoiceBlob_connectionString')]"
 					},
+					"LS_Postgres_Local_password": {
+						"value": "[parameters('LS_Postgres_Local_password')]"
+					},
 					"AzureSqlDatabase1_properties_typeProperties_server": {
 						"value": "[parameters('AzureSqlDatabase1_properties_typeProperties_server')]"
 					},
@@ -68,30 +87,19 @@
 					},
 					"AzureSqlDatabase1_properties_typeProperties_userName": {
 						"value": "[parameters('AzureSqlDatabase1_properties_typeProperties_userName')]"
+					},
+					"LS_Postgres_Local_properties_typeProperties_server": {
+						"value": "[parameters('LS_Postgres_Local_properties_typeProperties_server')]"
+					},
+					"LS_Postgres_Local_properties_typeProperties_database": {
+						"value": "[parameters('LS_Postgres_Local_properties_typeProperties_database')]"
+					},
+					"LS_Postgres_Local_properties_typeProperties_username": {
+						"value": "[parameters('LS_Postgres_Local_properties_typeProperties_username')]"
 					}
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "df-training-jman_ArmTemplate_1",
-			"type": "Microsoft.Resources/deployments",
-			"apiVersion": "2018-02-01",
-			"properties": {
-				"mode": "incremental",
-				"templateLink": {
-					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
-					"contentVersion": "1.0.0.0"
-				},
-				"parameters": {
-					"factoryName": {
-						"value": "[parameters('factoryName')]"
-					}
-				}
-			},
-			"dependsOn": [
-				"[resourceId('Microsoft.Resources/deployments', 'df-training-jman_ArmTemplate_0')]"
-			]
 		}
 	]
 }

@@ -11,14 +11,26 @@
 		"LS_InvoiceBlob_connectionString": {
 			"value": ""
 		},
+		"LS_Postgres_Local_password": {
+			"value": ""
+		},
 		"AzureSqlDatabase1_properties_typeProperties_server": {
 			"value": "db-server-jman.database.windows.net"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_database": {
-			"value": "db-train-sql"
+			"value": "miniproject"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_userName": {
 			"value": "harshadmin"
+		},
+		"LS_Postgres_Local_properties_typeProperties_server": {
+			"value": "localhost"
+		},
+		"LS_Postgres_Local_properties_typeProperties_database": {
+			"value": "fsmini"
+		},
+		"LS_Postgres_Local_properties_typeProperties_username": {
+			"value": "postgres"
 		}
 	}
 }

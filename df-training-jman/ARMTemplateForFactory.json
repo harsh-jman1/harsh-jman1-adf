@@ -15,17 +15,33 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_InvoiceBlob'"
 		},
+		"LS_Postgres_Local_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_Postgres_Local'"
+		},
 		"AzureSqlDatabase1_properties_typeProperties_server": {
 			"type": "string",
 			"defaultValue": "db-server-jman.database.windows.net"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_database": {
 			"type": "string",
-			"defaultValue": "db-train-sql"
+			"defaultValue": "miniproject"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "harshadmin"
+		},
+		"LS_Postgres_Local_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "localhost"
+		},
+		"LS_Postgres_Local_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "fsmini"
+		},
+		"LS_Postgres_Local_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "postgres"
 		}
 	},
 	"variables": {
@@ -33,328 +49,754 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_Blob_To_AzureSQL')]",
+			"name": "[concat(parameters('factoryName'), '/PL_Local_To_SQL')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "fetch the database from the local postgres server to azure sql server",
 				"activities": [
 					{
-						"name": "Insert Customer Data To Server",
-						"type": "Copy",
+						"name": "LocalToSQL",
+						"type": "ForEach",
 						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
+							"items": {
+								"value": "@pipeline().parameters.cw_items",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "CopyLocalToSQL",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [
+										{
+											"name": "Source",
+											"value": "public.@{item().source.table}"
+										},
+										{
+											"name": "Destination",
+											"value": "raw.@{item().destination.table}"
+										}
+									],
+									"typeProperties": {
+										"source": {
+											"type": "PostgreSqlV2Source"
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false
+										},
+										"enableStaging": false,
+										"validateDataConsistency": false,
+										"translator": {
+											"value": "@item().copyActivity.translator",
+											"type": "Expression"
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_Postgres_Local_Input",
+											"type": "DatasetReference",
+											"parameters": {
+												"cw_table": "@item().source.table"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_SQL",
+											"type": "DatasetReference",
+											"parameters": {
+												"tableName": {
+													"value": "@item().source.table",
+													"type": "Expression"
+												},
+												"tableSchema": {
+													"value": "@item().destination.table",
+													"type": "Expression"
+												}
+											}
+										}
+									]
 								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_CustomerInput",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DS_CustomerSQLSink",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Insert Order Data To Server",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Insert Customer Data To Server",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_OrderDetailInput",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DS_OrderDetailSQLSink",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2024-08-27T06:19:36Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_CustomerInput')]",
-				"[concat(variables('factoryId'), '/datasets/DS_CustomerSQLSink')]",
-				"[concat(variables('factoryId'), '/datasets/DS_OrderDetailInput')]",
-				"[concat(variables('factoryId'), '/datasets/DS_OrderDetailSQLSink')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PL_Calculate_Total_Amount')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Update Price",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DF_Calculate_Single_Price_Update_Quantity",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"OrderDetails": {},
-									"OutputSink": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
+							]
 						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"annotations": [],
-				"lastPublishTime": "2024-08-27T06:36:07Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DF_Calculate_Single_Price_Update_Quantity')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PL_Consolidation_Insertion')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Execute Consolidation Pipeline",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "PL_Create_Consolidated_Files",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Execute SQL Insert Pipeline",
-						"type": "ExecutePipeline",
-						"dependsOn": [
+				"parameters": {
+					"cw_items": {
+						"type": "Array",
+						"defaultValue": [
 							{
-								"activity": "Execute Consolidation Pipeline",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "PL_Blob_To_AzureSQL",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2024-08-27T05:28:30Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/PL_Create_Consolidated_Files')]",
-				"[concat(variables('factoryId'), '/pipelines/PL_Blob_To_AzureSQL')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PL_Create_Consolidated_Files')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy Customer Details",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": "input",
-									"wildcardFileName": "*.csv",
-									"enablePartitionDiscovery": false
+								"source": {
+									"table": "Category"
 								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings",
-									"copyBehavior": "MergeFiles"
+								"destination": {
+									"table": "Category"
 								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
+								"copyActivity": {
+									"translator": {
+										"type": "TabularTranslator",
+										"mappings": [
+											{
+												"source": {
+													"name": "id",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "id",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "name",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "name",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											}
+										],
+										"typeConversion": true,
+										"typeConversionSettings": {
+											"allowDataTruncation": true,
+											"treatBooleanAsNumber": false
+										}
+									}
 								}
 							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
+							{
+								"source": {
+									"table": "Event"
+								},
+								"destination": {
+									"table": "Event"
+								},
+								"copyActivity": {
+									"translator": {
+										"type": "TabularTranslator",
+										"mappings": [
+											{
+												"source": {
+													"name": "id",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "id",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "title",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "title",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "description",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "description",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "location",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "location",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "createdAt",
+													"type": "DateTime",
+													"physicalType": "timestamp without time zone"
+												},
+												"sink": {
+													"name": "createdAt",
+													"type": "DateTime",
+													"physicalType": "datetime2"
+												}
+											},
+											{
+												"source": {
+													"name": "imageUrl",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "imageUrl",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "startDateTime",
+													"type": "DateTime",
+													"physicalType": "timestamp without time zone"
+												},
+												"sink": {
+													"name": "startDateTime",
+													"type": "DateTime",
+													"physicalType": "datetime2"
+												}
+											},
+											{
+												"source": {
+													"name": "endDateTime",
+													"type": "DateTime",
+													"physicalType": "timestamp without time zone"
+												},
+												"sink": {
+													"name": "endDateTime",
+													"type": "DateTime",
+													"physicalType": "datetime2"
+												}
+											},
+											{
+												"source": {
+													"name": "price",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "price",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "isFree",
+													"type": "Boolean",
+													"physicalType": "boolean"
+												},
+												"sink": {
+													"name": "isFree",
+													"type": "Boolean",
+													"physicalType": "bit"
+												}
+											},
+											{
+												"source": {
+													"name": "url",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "url",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "categoryId",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "categoryId",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "organizerId",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "organizerId",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "isHidden",
+													"type": "Boolean",
+													"physicalType": "boolean"
+												},
+												"sink": {
+													"name": "isHidden",
+													"type": "Boolean",
+													"physicalType": "bit"
+												}
+											}
+										],
+										"typeConversion": true,
+										"typeConversionSettings": {
+											"allowDataTruncation": true,
+											"treatBooleanAsNumber": false
+										}
+									}
 								}
-							}
-						},
-						"inputs": [
+							},
 							{
-								"referenceName": "DS_csvInput",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
+								"source": {
+									"table": "Order"
+								},
+								"destination": {
+									"table": "Order"
+								},
+								"copyActivity": {
+									"translator": {
+										"type": "TabularTranslator",
+										"mappings": [
+											{
+												"source": {
+													"name": "id",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "id",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "createdAt",
+													"type": "DateTime",
+													"physicalType": "timestamp without time zone"
+												},
+												"sink": {
+													"name": "createdAt",
+													"type": "DateTime",
+													"physicalType": "datetime2"
+												}
+											},
+											{
+												"source": {
+													"name": "stripeId",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "stripeId",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "totalAmount",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "totalAmount",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "eventId",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "eventId",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "buyerId",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "buyerId",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "quantity",
+													"type": "Int32",
+													"physicalType": "integer"
+												},
+												"sink": {
+													"name": "quantity",
+													"type": "Int32",
+													"physicalType": "int"
+												}
+											}
+										],
+										"typeConversion": true,
+										"typeConversionSettings": {
+											"allowDataTruncation": true,
+											"treatBooleanAsNumber": false
+										}
+									}
+								}
+							},
 							{
-								"referenceName": "DS_OrderDetailsSink",
-								"type": "DatasetReference",
-								"parameters": {}
+								"source": {
+									"table": "RefreshToken"
+								},
+								"destination": {
+									"table": "RefreshToken"
+								},
+								"copyActivity": {
+									"translator": {
+										"type": "TabularTranslator",
+										"mappings": [
+											{
+												"source": {
+													"name": "id",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "id",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "hashedToken",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "hashedToken",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "userId",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "userId",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "revoked",
+													"type": "Boolean",
+													"physicalType": "boolean"
+												},
+												"sink": {
+													"name": "revoked",
+													"type": "Boolean",
+													"physicalType": "bit"
+												}
+											},
+											{
+												"source": {
+													"name": "createdAt",
+													"type": "DateTime",
+													"physicalType": "timestamp without time zone"
+												},
+												"sink": {
+													"name": "createdAt",
+													"type": "DateTime",
+													"physicalType": "datetime2"
+												}
+											},
+											{
+												"source": {
+													"name": "updatedAt",
+													"type": "DateTime",
+													"physicalType": "timestamp without time zone"
+												},
+												"sink": {
+													"name": "updatedAt",
+													"type": "DateTime",
+													"physicalType": "datetime2"
+												}
+											}
+										],
+										"typeConversion": true,
+										"typeConversionSettings": {
+											"allowDataTruncation": true,
+											"treatBooleanAsNumber": false
+										}
+									}
+								}
+							},
+							{
+								"source": {
+									"table": "Role"
+								},
+								"destination": {
+									"table": "Role"
+								},
+								"copyActivity": {
+									"translator": {
+										"type": "TabularTranslator",
+										"mappings": [
+											{
+												"source": {
+													"name": "id",
+													"type": "Int32",
+													"physicalType": "integer"
+												},
+												"sink": {
+													"name": "id",
+													"type": "Int32",
+													"physicalType": "int"
+												}
+											},
+											{
+												"source": {
+													"name": "name",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "name",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											}
+										],
+										"typeConversion": true,
+										"typeConversionSettings": {
+											"allowDataTruncation": true,
+											"treatBooleanAsNumber": false
+										}
+									}
+								}
+							},
+							{
+								"source": {
+									"table": "User"
+								},
+								"destination": {
+									"table": "User"
+								},
+								"copyActivity": {
+									"translator": {
+										"type": "TabularTranslator",
+										"mappings": [
+											{
+												"source": {
+													"name": "id",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "id",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "email",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "email",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "firstName",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "firstName",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "lastName",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "lastName",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "photo",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "photo",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "createdAt",
+													"type": "DateTime",
+													"physicalType": "timestamp without time zone"
+												},
+												"sink": {
+													"name": "createdAt",
+													"type": "DateTime",
+													"physicalType": "datetime2"
+												}
+											},
+											{
+												"source": {
+													"name": "updatedAt",
+													"type": "DateTime",
+													"physicalType": "timestamp without time zone"
+												},
+												"sink": {
+													"name": "updatedAt",
+													"type": "DateTime",
+													"physicalType": "datetime2"
+												}
+											},
+											{
+												"source": {
+													"name": "password",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "password",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											}
+										],
+										"typeConversion": true,
+										"typeConversionSettings": {
+											"allowDataTruncation": true,
+											"treatBooleanAsNumber": false
+										}
+									}
+								}
+							},
+							{
+								"source": {
+									"table": "UserRoles"
+								},
+								"destination": {
+									"table": "UserRoles"
+								},
+								"copyActivity": {
+									"translator": {
+										"type": "TabularTranslator",
+										"mappings": [
+											{
+												"source": {
+													"name": "userId",
+													"type": "String",
+													"physicalType": "text"
+												},
+												"sink": {
+													"name": "userId",
+													"type": "String",
+													"physicalType": "nvarchar"
+												}
+											},
+											{
+												"source": {
+													"name": "roleId",
+													"type": "Int32",
+													"physicalType": "integer"
+												},
+												"sink": {
+													"name": "roleId",
+													"type": "Int32",
+													"physicalType": "int"
+												}
+											}
+										],
+										"typeConversion": true,
+										"typeConversionSettings": {
+											"allowDataTruncation": true,
+											"treatBooleanAsNumber": false
+										}
+									}
+								}
 							}
 						]
-					},
+					}
+				},
+				"folder": {
+					"name": "Full Stack"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_Postgres_Local_Input')]",
+				"[concat(variables('factoryId'), '/datasets/DS_SQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_Raw_Import')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
 					{
-						"name": "Copy Order Details",
+						"name": "Copy From Blob",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy Customer Details",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -369,26 +811,346 @@
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
 									"recursive": true,
-									"wildcardFolderPath": "input",
 									"wildcardFileName": "*.xlsx",
 									"enablePartitionDiscovery": false
 								}
 							},
 							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
 							},
 							"enableStaging": false,
 							"translator": {
 								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "departmentCode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "departmentCode",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "categoryCode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "categoryCode",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "categoryName",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "categoryName",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "searchCategoryCode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "searchCategoryCode",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "seriesCode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "seriesCode",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "seriesName",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "seriesName",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brandCode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brandCode",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brandUrlCode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brandUrlCode",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brandName",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brandName",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "productImageList",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "productImageList",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "catchCopy",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "catchCopy",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "minPiecesPerPackage",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "minPiecesPerPackage",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "maxPiecesPerPackage",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "maxPiecesPerPackage",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "minStandardDaysToShip",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "minStandardDaysToShip",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "maxStandardDaysToShip",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "maxStandardDaysToShip",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "minStandardUnitPrice",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "minStandardUnitPrice",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "maxStandardUnitPrice",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "maxStandardUnitPrice",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "minPricePerPiece",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "minPricePerPiece",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "maxPricePerPiece",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "maxPricePerPiece",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "recommendFlag",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "recommendFlag",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "volumeDiscountFlag",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "volumeDiscountFlag",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "discontinuedProductFlag",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "discontinuedProductFlag",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "stock",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "stock",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "pageView",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "pageView",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "comparisonSpecValueList",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "comparisonSpecValueList",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "shaftPatternSpecValueList",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "shaftPatternSpecValueList",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "categoryList",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "categoryList",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
 								"typeConversion": true,
 								"typeConversionSettings": {
 									"allowDataTruncation": true,
@@ -398,173 +1160,220 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "DS_excelInput",
+								"referenceName": "DS_Blob_Input_Excel",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "DS_CustomerDetailsSink",
+								"referenceName": "DS_SQL",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"tableName": "product_details",
+									"tableSchema": "raw"
+								}
 							}
 						]
+					},
+					{
+						"name": "Clean Data",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Copy From Blob",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_Clean_Raw_Data",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"TableInput": {
+										"tableName": "product_details",
+										"tableSchema": "raw"
+									},
+									"TableSink": {
+										"tableName": "product_details",
+										"tableSchema": "prep"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"annotations": [],
-				"lastPublishTime": "2024-08-27T05:28:28Z"
+				"folder": {
+					"name": "Misumi"
+				},
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_csvInput')]",
-				"[concat(variables('factoryId'), '/datasets/DS_OrderDetailsSink')]",
-				"[concat(variables('factoryId'), '/datasets/DS_excelInput')]",
-				"[concat(variables('factoryId'), '/datasets/DS_CustomerDetailsSink')]"
+				"[concat(variables('factoryId'), '/datasets/DS_Blob_Input_Excel')]",
+				"[concat(variables('factoryId'), '/datasets/DS_SQL')]",
+				"[concat(variables('factoryId'), '/dataflows/DF_Clean_Raw_Data')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DS_CustomerDetailsSink')]",
+			"name": "[concat(parameters('factoryName'), '/PL_Raw_To_Prep')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Fetch Table Names",
+						"type": "Script",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"linkedServiceName": {
+							"referenceName": "AzureSqlDatabase1",
+							"type": "LinkedServiceReference"
+						},
+						"typeProperties": {
+							"scripts": [
+								{
+									"type": "Query",
+									"text": "SELECT t.name \n  FROM sys.tables AS t\n  INNER JOIN sys.schemas AS s\n  ON t.[schema_id] = s.[schema_id]\n  WHERE s.name = N'raw';"
+								}
+							],
+							"scriptBlockExecutionTimeout": "02:00:00"
+						}
+					},
+					{
+						"name": "Prep Each Raw Table",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Fetch Table Names",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Fetch Table Names').output.resultSets[0].rows",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "DF_Prep_Raw_Data",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "DF_Prepare_Data_From_Raw",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"TableInput": {
+													"tableName": {
+														"value": "@item().name",
+														"type": "Expression"
+													},
+													"tableSchema": "raw"
+												},
+												"TableOutput": {
+													"tableName": {
+														"value": "@item().name",
+														"type": "Expression"
+													},
+													"tableSchema": "prep"
+												}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Full Stack"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]",
+				"[concat(variables('factoryId'), '/dataflows/DF_Prepare_Data_From_Raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Postgres_Local_Input')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "LS_InvoiceBlob",
+					"referenceName": "LS_Postgres_Local",
 					"type": "LinkedServiceReference"
 				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "orderdetails.csv",
-						"container": "consolidatedblob"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "C024",
-						"type": "String"
-					},
-					{
-						"name": "Sophia",
-						"type": "String"
-					},
-					{
-						"name": "Green",
-						"type": "String"
-					},
-					{
-						"name": "sophia.green@example.com",
-						"type": "String"
-					},
-					{
-						"name": "555-1023",
-						"type": "String"
-					},
-					{
-						"name": "2121 Rosewood St",
-						"type": "String"
-					},
-					{
-						"name": "City X",
-						"type": "String"
-					},
-					{
-						"name": "CA",
-						"type": "String"
-					},
-					{
-						"name": "90003",
-						"type": "String"
-					},
-					{
-						"name": "USA",
+				"parameters": {
+					"cw_table": {
 						"type": "String"
 					}
-				]
+				},
+				"annotations": [],
+				"type": "PostgreSqlV2Table",
+				"schema": [],
+				"typeProperties": {
+					"schema": "public",
+					"table": {
+						"value": "@dataset().cw_table",
+						"type": "Expression"
+					}
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_InvoiceBlob')]"
+				"[concat(variables('factoryId'), '/linkedServices/LS_Postgres_Local')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DS_CustomerInput')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_InvoiceBlob",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "customerdetails.csv",
-						"container": "consolidatedblob"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "CustomerID",
-						"type": "String"
-					},
-					{
-						"name": "FirstName",
-						"type": "String"
-					},
-					{
-						"name": "LastName",
-						"type": "String"
-					},
-					{
-						"name": "Email",
-						"type": "String"
-					},
-					{
-						"name": "PhoneNumber",
-						"type": "String"
-					},
-					{
-						"name": "Address",
-						"type": "String"
-					},
-					{
-						"name": "City",
-						"type": "String"
-					},
-					{
-						"name": "State",
-						"type": "String"
-					},
-					{
-						"name": "ZipCode",
-						"type": "String"
-					},
-					{
-						"name": "Country",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_InvoiceBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_CustomerSQLSink')]",
+			"name": "[concat(parameters('factoryName'), '/DS_SQL')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -572,542 +1381,30 @@
 					"referenceName": "AzureSqlDatabase1",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"tableName": {
+						"type": "string"
+					},
+					"tableSchema": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "CustomerID",
-						"type": "varchar"
-					},
-					{
-						"name": "FirstName",
-						"type": "varchar"
-					},
-					{
-						"name": "LastName",
-						"type": "varchar"
-					},
-					{
-						"name": "Email",
-						"type": "varchar"
-					},
-					{
-						"name": "PhoneNumber",
-						"type": "varchar"
-					},
-					{
-						"name": "Address",
-						"type": "varchar"
-					},
-					{
-						"name": "City",
-						"type": "varchar"
-					},
-					{
-						"name": "State",
-						"type": "varchar"
-					},
-					{
-						"name": "ZipCode",
-						"type": "varchar"
-					},
-					{
-						"name": "Country",
-						"type": "varchar"
-					}
-				],
+				"schema": [],
 				"typeProperties": {
-					"schema": "dbo",
-					"table": "Customer"
+					"schema": {
+						"value": "@dataset().tableSchema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().tableName",
+						"type": "Expression"
+					}
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_InputDataset')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_InvoiceBlob",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "input",
-						"container": "invoiceblob"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "CustomerID",
-						"type": "String"
-					},
-					{
-						"name": "FirstName",
-						"type": "String"
-					},
-					{
-						"name": "LastName",
-						"type": "String"
-					},
-					{
-						"name": "Email",
-						"type": "String"
-					},
-					{
-						"name": "PhoneNumber",
-						"type": "String"
-					},
-					{
-						"name": "Address",
-						"type": "String"
-					},
-					{
-						"name": "City",
-						"type": "String"
-					},
-					{
-						"name": "State",
-						"type": "String"
-					},
-					{
-						"name": "ZipCode",
-						"type": "String"
-					},
-					{
-						"name": "Country",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_InvoiceBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_OrderDetailInput')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_InvoiceBlob",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "orderdetails.csv",
-						"container": "consolidatedblob"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "OrderID",
-						"type": "String"
-					},
-					{
-						"name": "ProductID",
-						"type": "String"
-					},
-					{
-						"name": "ProductName",
-						"type": "String"
-					},
-					{
-						"name": "Quantity",
-						"type": "String"
-					},
-					{
-						"name": "OrderTimestamp",
-						"type": "String"
-					},
-					{
-						"name": "Price",
-						"type": "String"
-					},
-					{
-						"name": "CustomerID",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_InvoiceBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_OrderDetailSQLSink')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "OrderID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ProductID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ProductName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Quantity",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "OrderTimestamp",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Price",
-						"type": "decimal",
-						"precision": 21,
-						"scale": 2
-					},
-					{
-						"name": "CustomerID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "SinglePrice",
-						"type": "decimal",
-						"precision": 10,
-						"scale": 2
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "OrderDetail"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_OrderDetail_Updated_SQLSink')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "OrderID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ProductID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ProductName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Quantity",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "OrderTimestamp",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Price",
-						"type": "decimal",
-						"precision": 21,
-						"scale": 2
-					},
-					{
-						"name": "CustomerID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "SinglePrice",
-						"type": "decimal",
-						"precision": 10,
-						"scale": 2
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "OrderDetailUpdated"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_OrderDetailsSink')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_InvoiceBlob",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "customerdetails.csv",
-						"container": "consolidatedblob"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_InvoiceBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_OrderDetailsUpdated_Input_SQL')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "OrderID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ProductID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ProductName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Quantity",
-						"type": "nvarchar"
-					},
-					{
-						"name": "OrderTimestamp",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Price",
-						"type": "nvarchar"
-					},
-					{
-						"name": "CustomerID",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "OrderDetailUpdated"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_OrderDetails_Input_SQL')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "OrderID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ProductID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ProductName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Quantity",
-						"type": "nvarchar"
-					},
-					{
-						"name": "OrderTimestamp",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Price",
-						"type": "nvarchar"
-					},
-					{
-						"name": "CustomerID",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "OrderDetail"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_csvInput')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_InvoiceBlob",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "invoiceblob"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_InvoiceBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_excelInput')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_InvoiceBlob",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Excel",
-				"typeProperties": {
-					"sheetName": "Sheet1",
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "input",
-						"container": "invoiceblob"
-					},
-					"firstRowAsHeader": true
-				},
-				"schema": [
-					{
-						"name": "OrderID",
-						"type": "String"
-					},
-					{
-						"name": "ProductID",
-						"type": "String"
-					},
-					{
-						"name": "ProductName",
-						"type": "String"
-					},
-					{
-						"name": "Quantity",
-						"type": "String"
-					},
-					{
-						"name": "OrderTimestamp",
-						"type": "String"
-					},
-					{
-						"name": "Price",
-						"type": "String"
-					},
-					{
-						"name": "CustomerID",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_InvoiceBlob')]"
 			]
 		},
 		{
@@ -1146,145 +1443,79 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DF_Calculate_Single_Price')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/LS_Postgres_Local')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"annotations": [],
+				"type": "PostgreSqlV2",
 				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DS_OrderDetails_Input_SQL",
-								"type": "DatasetReference"
-							},
-							"name": "OrderDetails"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DS_OrderDetail_Updated_SQLSink",
-								"type": "DatasetReference"
-							},
-							"name": "OutputSink"
-						}
-					],
-					"transformations": [
-						{
-							"name": "SinglePrice"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          OrderID as string,",
-						"          ProductID as string,",
-						"          ProductName as string,",
-						"          Quantity as integer,",
-						"          OrderTimestamp as string,",
-						"          Price as float,",
-						"          CustomerID as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> OrderDetails",
-						"OrderDetails derive(SinglePrice = toDecimal(toFloat(Price)/toFloat(Quantity))) ~> SinglePrice",
-						"SinglePrice sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          OrderID as string,",
-						"          ProductID as string,",
-						"          ProductName as string,",
-						"          Quantity as integer,",
-						"          OrderTimestamp as string,",
-						"          Price as decimal(21,2),",
-						"          CustomerID as string,",
-						"          SinglePrice as decimal(10,2)",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> OutputSink"
-					]
+					"server": "[parameters('LS_Postgres_Local_properties_typeProperties_server')]",
+					"port": 5432,
+					"database": "[parameters('LS_Postgres_Local_properties_typeProperties_database')]",
+					"username": "[parameters('LS_Postgres_Local_properties_typeProperties_username')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('LS_Postgres_Local_password')]"
+					},
+					"sslMode": 2,
+					"authenticationType": "Basic"
+				},
+				"connectVia": {
+					"referenceName": "IR-Self",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_OrderDetails_Input_SQL')]",
-				"[concat(variables('factoryId'), '/datasets/DS_OrderDetail_Updated_SQLSink')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/IR-Self')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DF_Calculate_Single_Price_Update_Quantity')]",
+			"name": "[concat(parameters('factoryName'), '/IR-Self')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_Prepare_Data_From_Raw')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "Full Stack Dataflows"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "DS_OrderDetails_Input_SQL",
+								"referenceName": "DS_SQL",
 								"type": "DatasetReference"
 							},
-							"name": "OrderDetails"
+							"name": "TableInput"
 						}
 					],
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "DS_OrderDetail_Updated_SQLSink",
+								"referenceName": "DS_SQL",
 								"type": "DatasetReference"
 							},
-							"name": "OutputSink"
+							"name": "TableOutput"
 						}
 					],
-					"transformations": [
-						{
-							"name": "SinglePrice"
-						},
-						{
-							"name": "UpdateQuantity"
-						},
-						{
-							"name": "UpdatePrice"
-						}
-					],
+					"transformations": [],
 					"scriptLines": [
-						"source(output(",
-						"          OrderID as string,",
-						"          ProductID as string,",
-						"          ProductName as string,",
-						"          Quantity as integer,",
-						"          OrderTimestamp as string,",
-						"          Price as decimal(21,2),",
-						"          CustomerID as string,",
-						"          SinglePrice as decimal(10,2)",
-						"     ),",
-						"     allowSchemaDrift: true,",
+						"source(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> OrderDetails",
-						"OrderDetails derive(SinglePrice = toDecimal(toFloat(Price)/toFloat(Quantity))) ~> SinglePrice",
-						"SinglePrice derive(Quantity = Quantity + 1) ~> UpdateQuantity",
-						"UpdateQuantity derive(Price = Quantity * SinglePrice) ~> UpdatePrice",
-						"UpdatePrice sink(allowSchemaDrift: true,",
+						"     format: 'table') ~> TableInput",
+						"TableInput sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     input(",
-						"          OrderID as string,",
-						"          ProductID as string,",
-						"          ProductName as string,",
-						"          Quantity as integer,",
-						"          OrderTimestamp as string,",
-						"          Price as decimal(21,2),",
-						"          CustomerID as string,",
-						"          SinglePrice as decimal(10,2)",
-						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
 						"     updateable:false,",
@@ -1293,75 +1524,185 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> OutputSink"
+						"     errorHandlingOption: 'stopOnFirstError') ~> TableOutput"
 					]
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_OrderDetails_Input_SQL')]",
-				"[concat(variables('factoryId'), '/datasets/DS_OrderDetail_Updated_SQLSink')]"
+				"[concat(variables('factoryId'), '/datasets/DS_SQL')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DF_Update_Quantity_Price')]",
+			"name": "[concat(parameters('factoryName'), '/DS_Blob_Input_Excel')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_InvoiceBlob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "products_details",
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "misumi"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "departmentCode",
+						"type": "String"
+					},
+					{
+						"name": "categoryCode",
+						"type": "String"
+					},
+					{
+						"name": "categoryName",
+						"type": "String"
+					},
+					{
+						"name": "searchCategoryCode",
+						"type": "String"
+					},
+					{
+						"name": "seriesCode",
+						"type": "String"
+					},
+					{
+						"name": "seriesName",
+						"type": "String"
+					},
+					{
+						"name": "brandCode",
+						"type": "String"
+					},
+					{
+						"name": "brandUrlCode",
+						"type": "String"
+					},
+					{
+						"name": "brandName",
+						"type": "String"
+					},
+					{
+						"name": "productImageList",
+						"type": "String"
+					},
+					{
+						"name": "catchCopy",
+						"type": "String"
+					},
+					{
+						"name": "minPiecesPerPackage",
+						"type": "String"
+					},
+					{
+						"name": "maxPiecesPerPackage",
+						"type": "String"
+					},
+					{
+						"name": "minStandardDaysToShip",
+						"type": "String"
+					},
+					{
+						"name": "maxStandardDaysToShip",
+						"type": "String"
+					},
+					{
+						"name": "minStandardUnitPrice",
+						"type": "String"
+					},
+					{
+						"name": "maxStandardUnitPrice",
+						"type": "String"
+					},
+					{
+						"name": "minPricePerPiece",
+						"type": "String"
+					},
+					{
+						"name": "maxPricePerPiece",
+						"type": "String"
+					},
+					{
+						"name": "recommendFlag",
+						"type": "String"
+					},
+					{
+						"name": "volumeDiscountFlag",
+						"type": "String"
+					},
+					{
+						"name": "discontinuedProductFlag",
+						"type": "String"
+					},
+					{
+						"name": "stock",
+						"type": "String"
+					},
+					{
+						"name": "pageView",
+						"type": "String"
+					},
+					{
+						"name": "comparisonSpecValueList",
+						"type": "String"
+					},
+					{
+						"name": "shaftPatternSpecValueList",
+						"type": "String"
+					},
+					{
+						"name": "categoryList",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_InvoiceBlob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_Clean_Raw_Data')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "Misumi"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "DS_OrderDetailsUpdated_Input_SQL",
+								"referenceName": "DS_SQL",
 								"type": "DatasetReference"
 							},
-							"name": "OrderDetails",
-							"description": "Import data from DS_OrderDetailsUpdated_Input_SQL "
+							"name": "TableInput"
 						}
 					],
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "DS_OrderDetail_Updated_SQLSink",
+								"referenceName": "DS_SQL",
 								"type": "DatasetReference"
 							},
-							"name": "OutputSink"
+							"name": "TableSink"
 						}
 					],
-					"transformations": [
-						{
-							"name": "UpdatePrice"
-						}
-					],
+					"transformations": [],
 					"scriptLines": [
-						"source(output(",
-						"          OrderID as string,",
-						"          ProductID as string,",
-						"          ProductName as string,",
-						"          Quantity as integer,",
-						"          OrderTimestamp as string,",
-						"          Price as decimal(21,2),",
-						"          CustomerID as string,",
-						"          SinglePrice as decimal(10,2)",
-						"     ),",
-						"     allowSchemaDrift: true,",
+						"source(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     limit: 100,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> OrderDetails",
-						"OrderDetails derive(Price = toDecimal(toFloat(Quantity) *  toFloat(SinglePrice))) ~> UpdatePrice",
-						"UpdatePrice sink(allowSchemaDrift: true,",
+						"     format: 'table') ~> TableInput",
+						"TableInput sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     input(",
-						"          OrderID as string,",
-						"          ProductID as string,",
-						"          ProductName as string,",
-						"          Quantity as integer,",
-						"          OrderTimestamp as string,",
-						"          Price as decimal(21,2),",
-						"          CustomerID as string,",
-						"          SinglePrice as decimal(10,2)",
-						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
 						"     updateable:false,",
@@ -1370,14 +1711,12 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> OutputSink"
+						"     errorHandlingOption: 'stopOnFirstError') ~> TableSink"
 					]
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_OrderDetailsUpdated_Input_SQL')]",
-				"[concat(variables('factoryId'), '/datasets/DS_OrderDetail_Updated_SQLSink')]"
+				"[concat(variables('factoryId'), '/datasets/DS_SQL')]"
 			]
 		}
 	]
