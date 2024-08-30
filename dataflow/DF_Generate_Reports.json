@@ -43,6 +43,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "AveragePriceSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "AverageDeliverySink"
 				}
 			],
 			"transformations": [
@@ -188,7 +195,7 @@
 				"AveragePriceInput derive(AveragePrice = (toFloat(minPricePerPiece) +  toFloat(maxPricePerPiece) ) / 2.0) ~> AveragePrice",
 				"AveragePrice alterRow(deleteIf(isNull(AveragePrice))) ~> RemoveProductsWithNoPrice",
 				"AverageDeliveryInput derive(AverageDeliveryDate = (toFloat(minStandardDaysToShip) +  toFloat(maxStandardDaysToShip) ) / 2.0) ~> AverageDeliveryDate",
-				"AverageDeliveryDate alterRow() ~> RemoveProductsWithNoDelivery",
+				"AverageDeliveryDate alterRow(deleteIf(isNull(AverageDeliveryDate))) ~> RemoveProductsWithNoDelivery",
 				"SelectColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -209,7 +216,17 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> AveragePriceSink"
+				"     errorHandlingOption: 'stopOnFirstError') ~> AveragePriceSink",
+				"RemoveProductsWithNoDelivery sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> AverageDeliverySink"
 			]
 		}
 	}
