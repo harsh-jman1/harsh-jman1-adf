@@ -455,6 +455,10 @@
 								"tableName": "product_details",
 								"tableSchema": "prep"
 							},
+							"AverageDeliveryInput": {
+								"tableName": "product_details",
+								"tableSchema": "prep"
+							},
 							"MostViewedSink": {
 								"tableName": "most_viewed_products",
 								"tableSchema": "reports"
