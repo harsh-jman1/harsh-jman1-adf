@@ -44,6 +44,7 @@
 								"tableSchema": "prep"
 							},
 							"MergeViewSink": {
+								"tableName": "merge_view",
 								"tableSchema": "report"
 							}
 						}
