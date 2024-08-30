@@ -69,6 +69,9 @@
 				},
 				{
 					"name": "JoinRolesWithMain"
+				},
+				{
+					"name": "RemapColumns"
 				}
 			],
 			"scriptLines": [
@@ -173,7 +176,42 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> JoinRolesWithMain"
+				"     broadcast: 'auto')~> JoinRolesWithMain",
+				"JoinRolesWithMain select(mapColumn(",
+				"          order_id = OrderInput@id,",
+				"          createdAt = OrderInput@createdAt,",
+				"          stripeId,",
+				"          totalAmount,",
+				"          quantity,",
+				"          user_id = UserInput@id,",
+				"          email,",
+				"          firstName,",
+				"          lastName,",
+				"          photo,",
+				"          createdAt = UserInput@createdAt,",
+				"          updatedAt,",
+				"          password,",
+				"          id = EventInput@id,",
+				"          title,",
+				"          description,",
+				"          location,",
+				"          createdAt = EventInput@createdAt,",
+				"          imageUrl,",
+				"          startDateTime,",
+				"          endDateTime,",
+				"          price,",
+				"          isFree,",
+				"          url,",
+				"          categoryId,",
+				"          organizerId,",
+				"          isHidden,",
+				"          id = CategoryInput@id,",
+				"          category = name,",
+				"          userId,",
+				"          category = Role",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemapColumns"
 			]
 		}
 	}
