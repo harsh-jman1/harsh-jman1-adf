@@ -56,7 +56,7 @@
 						"referenceName": "DS_SQL",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "MergeViewSink"
 				}
 			],
 			"transformations": [
@@ -180,7 +180,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectRequiredColumns",
-				"JoinCategory, SelectRequiredColumns join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"JoinCategory, SelectRequiredColumns join(UserInput@id == userId,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -221,7 +221,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+				"     errorHandlingOption: 'stopOnFirstError') ~> MergeViewSink"
 			]
 		}
 	}
