@@ -35,7 +35,7 @@
 					"name": "IDColumnConstant"
 				},
 				{
-					"name": "window1"
+					"name": "UpdateRowID"
 				}
 			],
 			"scriptLines": [
@@ -52,8 +52,8 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> RemoveHashColumn",
 				"RemoveHashColumn derive(ID = 1) ~> IDColumnConstant",
-				"IDColumnConstant window() ~> window1",
-				"window1 sink(allowSchemaDrift: true,",
+				"IDColumnConstant window(asc(ID, true)) ~> UpdateRowID",
+				"UpdateRowID sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
