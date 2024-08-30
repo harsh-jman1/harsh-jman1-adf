@@ -51,7 +51,11 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "join1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          id as string,",
@@ -88,18 +92,47 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> UserRoleInput",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          id as string,",
+				"          title as string,",
+				"          description as string,",
+				"          location as string,",
+				"          createdAt as timestamp,",
+				"          imageUrl as string,",
+				"          startDateTime as timestamp,",
+				"          endDateTime as timestamp,",
+				"          price as string,",
+				"          isFree as boolean,",
+				"          url as string,",
+				"          categoryId as string,",
+				"          organizerId as string,",
+				"          isHidden as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> EventInput",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          id as string,",
+				"          name as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> CategoryInput",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          id as integer,",
+				"          name as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> RoleInput"
+				"     format: 'table') ~> RoleInput",
+				"OrderInput join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1"
 			]
 		}
 	}
