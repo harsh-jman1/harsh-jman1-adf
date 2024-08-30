@@ -786,7 +786,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_Raw_Import')]",
+			"name": "[concat(parameters('factoryName'), '/PL_Import_and_Generate_Reports')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1179,6 +1179,8 @@
 					{
 						"name": "Clean Data",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "Copy From Blob",
@@ -1220,7 +1222,7 @@
 						}
 					},
 					{
-						"name": "DF_Most_Viewed_Products",
+						"name": "DF_Generate_Reports",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
@@ -1240,17 +1242,33 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "DF_Most_Viewed_Products",
+								"referenceName": "DF_Generate_Reports",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"InputTable": {
+									"ViewRankInput": {
 										"tableName": "product_details",
 										"tableSchema": "prep"
 									},
-									"TableSink": {
+									"AveragePriceInput": {
+										"tableName": "product_details",
+										"tableSchema": "prep"
+									},
+									"AverageDeliveryInput": {
+										"tableName": "product_details",
+										"tableSchema": "prep"
+									},
+									"MostViewedSink": {
 										"tableName": "most_viewed_products",
-										"tableSchema": "reports"
+										"tableSchema": "report"
+									},
+									"AveragePriceSink": {
+										"tableName": "average_price",
+										"tableSchema": "report"
+									},
+									"AverageDeliverySink": {
+										"tableName": "average_delivery",
+										"tableSchema": "report"
 									}
 								}
 							},
@@ -1275,7 +1293,7 @@
 				"[concat(variables('factoryId'), '/datasets/DS_Blob_Input_Excel')]",
 				"[concat(variables('factoryId'), '/datasets/DS_SQL')]",
 				"[concat(variables('factoryId'), '/dataflows/DF_Clean_Raw_Data')]",
-				"[concat(variables('factoryId'), '/dataflows/DF_Most_Viewed_Products')]"
+				"[concat(variables('factoryId'), '/dataflows/DF_Generate_Reports')]"
 			]
 		},
 		{
@@ -1795,7 +1813,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DF_Most_Viewed_Products')]",
+			"name": "[concat(parameters('factoryName'), '/DF_Generate_Reports')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1810,7 +1828,21 @@
 								"referenceName": "DS_SQL",
 								"type": "DatasetReference"
 							},
-							"name": "InputTable"
+							"name": "ViewRankInput"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "AveragePriceInput"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "AverageDeliveryInput"
 						}
 					],
 					"sinks": [
@@ -1819,7 +1851,21 @@
 								"referenceName": "DS_SQL",
 								"type": "DatasetReference"
 							},
-							"name": "TableSink"
+							"name": "MostViewedSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "AveragePriceSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "AverageDeliverySink"
 						}
 					],
 					"transformations": [
@@ -1828,6 +1874,24 @@
 						},
 						{
 							"name": "SelectColumns"
+						},
+						{
+							"name": "AveragePrice"
+						},
+						{
+							"name": "RemoveProductsWithNoPrice"
+						},
+						{
+							"name": "AverageDeliveryDate"
+						},
+						{
+							"name": "RemoveProductsWithNoDelivery"
+						},
+						{
+							"name": "SelectRequiredColumns"
+						},
+						{
+							"name": "SelectRequiredRows"
 						}
 					],
 					"scriptLines": [
@@ -1864,8 +1928,76 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> InputTable",
-						"InputTable sort(desc(pageView, false),",
+						"     format: 'table') ~> ViewRankInput",
+						"source(output(",
+						"          departmentCode as string,",
+						"          categoryCode as string,",
+						"          categoryName as string,",
+						"          searchCategoryCode as string,",
+						"          seriesCode as string,",
+						"          seriesName as string,",
+						"          brandCode as string,",
+						"          brandUrlCode as string,",
+						"          brandName as string,",
+						"          productImageList as string,",
+						"          catchCopy as string,",
+						"          minPiecesPerPackage as string,",
+						"          maxPiecesPerPackage as string,",
+						"          minStandardDaysToShip as string,",
+						"          maxStandardDaysToShip as string,",
+						"          minStandardUnitPrice as string,",
+						"          maxStandardUnitPrice as string,",
+						"          minPricePerPiece as string,",
+						"          maxPricePerPiece as string,",
+						"          recommendFlag as string,",
+						"          volumeDiscountFlag as string,",
+						"          discontinuedProductFlag as string,",
+						"          stock as string,",
+						"          pageView as string,",
+						"          comparisonSpecValueList as string,",
+						"          shaftPatternSpecValueList as string,",
+						"          categoryList as string,",
+						"          ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> AveragePriceInput",
+						"source(output(",
+						"          departmentCode as string,",
+						"          categoryCode as string,",
+						"          categoryName as string,",
+						"          searchCategoryCode as string,",
+						"          seriesCode as string,",
+						"          seriesName as string,",
+						"          brandCode as string,",
+						"          brandUrlCode as string,",
+						"          brandName as string,",
+						"          productImageList as string,",
+						"          catchCopy as string,",
+						"          minPiecesPerPackage as string,",
+						"          maxPiecesPerPackage as string,",
+						"          minStandardDaysToShip as integer,",
+						"          maxStandardDaysToShip as integer,",
+						"          minStandardUnitPrice as string,",
+						"          maxStandardUnitPrice as string,",
+						"          minPricePerPiece as string,",
+						"          maxPricePerPiece as string,",
+						"          recommendFlag as string,",
+						"          volumeDiscountFlag as string,",
+						"          discontinuedProductFlag as string,",
+						"          stock as string,",
+						"          pageView as string,",
+						"          comparisonSpecValueList as string,",
+						"          shaftPatternSpecValueList as string,",
+						"          categoryList as string,",
+						"          ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> AverageDeliveryInput",
+						"ViewRankInput sort(desc(pageView, false),",
 						"     caseInsensitive: true) ~> SortByPageView",
 						"SortByPageView select(mapColumn(",
 						"          ID,",
@@ -1882,6 +2014,43 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> SelectColumns",
+						"AveragePriceInput derive(AveragePrice = (toFloat(minPricePerPiece) +  toFloat(maxPricePerPiece) ) / 2.0) ~> AveragePrice",
+						"AveragePrice alterRow(deleteIf(isNull(AveragePrice))) ~> RemoveProductsWithNoPrice",
+						"AverageDeliveryInput derive(AverageDeliveryDate = (toFloat(minStandardDaysToShip) +  toFloat(maxStandardDaysToShip) ) / 2.0) ~> AverageDeliveryDate",
+						"AverageDeliveryDate alterRow(deleteIf(isNull(AverageDeliveryDate))) ~> RemoveProductsWithNoDelivery",
+						"RemoveProductsWithNoPrice select(mapColumn(",
+						"          ID,",
+						"          categoryName,",
+						"          seriesName,",
+						"          brandName,",
+						"          minPricePerPiece,",
+						"          maxPricePerPiece,",
+						"          volumeDiscountFlag,",
+						"          discontinuedProductFlag,",
+						"          stock,",
+						"          pageView,",
+						"          categoryList,",
+						"          AveragePrice",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectRequiredColumns",
+						"RemoveProductsWithNoDelivery select(mapColumn(",
+						"          ID,",
+						"          categoryName,",
+						"          seriesName,",
+						"          brandName,",
+						"          minStandardDaysToShip,",
+						"          maxStandardDaysToShip,",
+						"          recommendFlag,",
+						"          volumeDiscountFlag,",
+						"          discontinuedProductFlag,",
+						"          stock,",
+						"          pageView,",
+						"          categoryList,",
+						"          AverageDeliveryDate",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectRequiredRows",
 						"SelectColumns sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     deletable:false,",
@@ -1892,7 +2061,335 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> TableSink"
+						"     errorHandlingOption: 'stopOnFirstError') ~> MostViewedSink",
+						"SelectRequiredColumns sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> AveragePriceSink",
+						"SelectRequiredRows sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> AverageDeliverySink"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_SQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_Generate_Combined_View')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "DF_Merge_Views",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_Merge_Views",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"OrderInput": {
+										"tableName": "Order",
+										"tableSchema": "prep"
+									},
+									"UserInput": {
+										"tableName": "User",
+										"tableSchema": "prep"
+									},
+									"UserRoleInput": {
+										"tableName": "UserRoles",
+										"tableSchema": "prep"
+									},
+									"EventInput": {
+										"tableName": "Event",
+										"tableSchema": "prep"
+									},
+									"CategoryInput": {
+										"tableName": "Category",
+										"tableSchema": "prep"
+									},
+									"RoleInput": {
+										"tableName": "Role",
+										"tableSchema": "prep"
+									},
+									"MergeViewSink": {
+										"tableName": "merge_view",
+										"tableSchema": "report"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Full Stack"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DF_Merge_Views')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_Merge_Views')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Full Stack Dataflows"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "OrderInput"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "UserInput"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "UserRoleInput"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "EventInput"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "CategoryInput"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "RoleInput"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "MergeViewSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "JoinOrderAndUser"
+						},
+						{
+							"name": "JoinEvent"
+						},
+						{
+							"name": "JoinCategory"
+						},
+						{
+							"name": "JoinRoleName"
+						},
+						{
+							"name": "SelectRequiredColumns"
+						},
+						{
+							"name": "JoinRolesWithMain"
+						},
+						{
+							"name": "RemapColumns"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id as string,",
+						"          createdAt as timestamp,",
+						"          stripeId as string,",
+						"          totalAmount as string,",
+						"          eventId as string,",
+						"          buyerId as string,",
+						"          quantity as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> OrderInput",
+						"source(output(",
+						"          id as string,",
+						"          email as string,",
+						"          firstName as string,",
+						"          lastName as string,",
+						"          photo as string,",
+						"          createdAt as timestamp,",
+						"          updatedAt as timestamp,",
+						"          password as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> UserInput",
+						"source(output(",
+						"          userId as string,",
+						"          roleId as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> UserRoleInput",
+						"source(output(",
+						"          id as string,",
+						"          title as string,",
+						"          description as string,",
+						"          location as string,",
+						"          createdAt as timestamp,",
+						"          imageUrl as string,",
+						"          startDateTime as timestamp,",
+						"          endDateTime as timestamp,",
+						"          price as string,",
+						"          isFree as boolean,",
+						"          url as string,",
+						"          categoryId as string,",
+						"          organizerId as string,",
+						"          isHidden as boolean",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> EventInput",
+						"source(output(",
+						"          id as string,",
+						"          name as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> CategoryInput",
+						"source(output(",
+						"          id as integer,",
+						"          name as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> RoleInput",
+						"OrderInput, UserInput join(buyerId == UserInput@id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinOrderAndUser",
+						"JoinOrderAndUser, EventInput join(eventId == EventInput@id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinEvent",
+						"JoinEvent, CategoryInput join(categoryId == CategoryInput@id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinCategory",
+						"UserRoleInput, RoleInput join(roleId == id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinRoleName",
+						"JoinRoleName select(mapColumn(",
+						"          userId,",
+						"          Role = name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectRequiredColumns",
+						"JoinCategory, SelectRequiredColumns join(UserInput@id == userId,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinRolesWithMain",
+						"JoinRolesWithMain select(mapColumn(",
+						"          order_id = OrderInput@id,",
+						"          created_at = OrderInput@createdAt,",
+						"          stripe_id = stripeId,",
+						"          total_amount = totalAmount,",
+						"          quantity,",
+						"          user_id = UserInput@id,",
+						"          email,",
+						"          first_name = firstName,",
+						"          last_name = lastName,",
+						"          photo,",
+						"          event_id = EventInput@id,",
+						"          event_title = title,",
+						"          description,",
+						"          location,",
+						"          image_url = imageUrl,",
+						"          start_date_time = startDateTime,",
+						"          end_date_time = endDateTime,",
+						"          price,",
+						"          isFree,",
+						"          url,",
+						"          is_hidden = isHidden,",
+						"          category = name,",
+						"          category = Role",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> RemapColumns",
+						"RemapColumns sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> MergeViewSink"
 					]
 				}
 			},
