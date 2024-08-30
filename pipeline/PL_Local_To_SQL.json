@@ -52,7 +52,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "SourceDataset_ek5",
+									"referenceName": "DS_Postgres_Local_Input",
 									"type": "DatasetReference",
 									"parameters": {
 										"cw_table": "@item().source.table"

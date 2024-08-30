@@ -1,5 +1,5 @@
 {
-	"name": "SourceDataset_ek5",
+	"name": "DS_Postgres_Local_Input",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_Postgres_Local",
