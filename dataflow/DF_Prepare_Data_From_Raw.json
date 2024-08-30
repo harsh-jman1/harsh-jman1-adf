@@ -1,6 +1,9 @@
 {
 	"name": "DF_Prepare_Data_From_Raw",
 	"properties": {
+		"folder": {
+			"name": "Full Stack Dataflows"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
