@@ -26,7 +26,8 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> InputTable",
-				"InputTable sort(asc(ERROR_FUNCTION(''), true)) ~> SortByViews"
+				"InputTable sort(asc(pageView, false),",
+				"     caseInsensitive: true) ~> SortByViews"
 			]
 		}
 	}
