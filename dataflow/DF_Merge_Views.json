@@ -53,7 +53,10 @@
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "join1"
+					"name": "JoinOrderAndUser"
+				},
+				{
+					"name": "JoinEvent"
 				}
 			],
 			"scriptLines": [
@@ -128,11 +131,16 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> RoleInput",
-				"OrderInput join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"OrderInput, UserInput join(buyerId == UserInput@id,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1"
+				"     broadcast: 'auto')~> JoinOrderAndUser",
+				"JoinOrderAndUser, EventInput join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinEvent"
 			]
 		}
 	}
