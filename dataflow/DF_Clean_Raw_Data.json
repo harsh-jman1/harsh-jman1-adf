@@ -30,6 +30,9 @@
 				},
 				{
 					"name": "RemoveHashColumn"
+				},
+				{
+					"name": "IDColumnConstant"
 				}
 			],
 			"scriptLines": [
@@ -45,7 +48,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> RemoveHashColumn",
-				"RemoveHashColumn sink(allowSchemaDrift: true,",
+				"RemoveHashColumn derive(ID = 1) ~> IDColumnConstant",
+				"IDColumnConstant sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
