@@ -39,7 +39,7 @@
 					"name": "SelectColumns"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "AveragePrice"
 				}
 			],
 			"scriptLines": [
@@ -128,7 +128,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectColumns",
-				"AveragePriceInput derive(AveragePrice = ERROR_FUNCTION('')) ~> derivedColumn1",
+				"AveragePriceInput derive(AveragePrice = (toFloat(minPricePerPiece) +  toFloat(maxPricePerPiece) ) / 2.0) ~> AveragePrice",
 				"SelectColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
