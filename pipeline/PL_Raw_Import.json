@@ -20,7 +20,7 @@
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
-							"wildcardFileName": "*.csv",
+							"wildcardFileName": "*.xlsx",
 							"enablePartitionDiscovery": false
 						}
 					},
@@ -36,6 +36,11 @@
 						"type": "TabularTranslator",
 						"mappings": [
 							{
+								"source": {
+									"name": "departmentCode",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "departmentCode",
 									"type": "String",
@@ -43,6 +48,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "categoryCode",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "categoryCode",
 									"type": "String",
@@ -50,6 +60,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "categoryName",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "categoryName",
 									"type": "String",
@@ -57,6 +72,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "searchCategoryCode",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "searchCategoryCode",
 									"type": "String",
@@ -64,6 +84,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "seriesCode",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "seriesCode",
 									"type": "String",
@@ -71,6 +96,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "seriesName",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "seriesName",
 									"type": "String",
@@ -78,6 +108,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "brandCode",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "brandCode",
 									"type": "String",
@@ -85,6 +120,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "brandUrlCode",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "brandUrlCode",
 									"type": "String",
@@ -92,6 +132,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "brandName",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "brandName",
 									"type": "String",
@@ -99,6 +144,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "productImageList",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "productImageList",
 									"type": "String",
@@ -106,6 +156,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "catchCopy",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "catchCopy",
 									"type": "String",
@@ -113,6 +168,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "minPiecesPerPackage",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "minPiecesPerPackage",
 									"type": "String",
@@ -120,6 +180,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "maxPiecesPerPackage",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "maxPiecesPerPackage",
 									"type": "String",
@@ -127,6 +192,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "minStandardDaysToShip",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "minStandardDaysToShip",
 									"type": "String",
@@ -134,6 +204,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "maxStandardDaysToShip",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "maxStandardDaysToShip",
 									"type": "String",
@@ -141,6 +216,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "minStandardUnitPrice",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "minStandardUnitPrice",
 									"type": "String",
@@ -148,6 +228,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "maxStandardUnitPrice",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "maxStandardUnitPrice",
 									"type": "String",
@@ -155,6 +240,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "minPricePerPiece",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "minPricePerPiece",
 									"type": "String",
@@ -162,6 +252,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "maxPricePerPiece",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "maxPricePerPiece",
 									"type": "String",
@@ -169,6 +264,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "recommendFlag",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "recommendFlag",
 									"type": "String",
@@ -176,6 +276,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "volumeDiscountFlag",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "volumeDiscountFlag",
 									"type": "String",
@@ -183,6 +288,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "discontinuedProductFlag",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "discontinuedProductFlag",
 									"type": "String",
@@ -190,6 +300,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "stock",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "stock",
 									"type": "String",
@@ -197,6 +312,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "pageView",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "pageView",
 									"type": "String",
@@ -204,6 +324,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "comparisonSpecValueList",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "comparisonSpecValueList",
 									"type": "String",
@@ -211,6 +336,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "shaftPatternSpecValueList",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "shaftPatternSpecValueList",
 									"type": "String",
@@ -218,6 +348,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "categoryList",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "categoryList",
 									"type": "String",
