@@ -461,7 +461,15 @@
 							},
 							"MostViewedSink": {
 								"tableName": "most_viewed_products",
-								"tableSchema": "reports"
+								"tableSchema": "report"
+							},
+							"AveragePriceSink": {
+								"tableName": "average_price",
+								"tableSchema": "report"
+							},
+							"AverageDeliverySink": {
+								"tableName": "average_delivery",
+								"tableSchema": "report"
 							}
 						}
 					},
