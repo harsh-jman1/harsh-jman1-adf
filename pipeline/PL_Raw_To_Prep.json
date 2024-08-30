@@ -71,7 +71,7 @@
 										},
 										"TableOutput": {
 											"sinkTableName": {
-												"value": "@item()",
+												"value": "@item().name",
 												"type": "Expression"
 											}
 										}
