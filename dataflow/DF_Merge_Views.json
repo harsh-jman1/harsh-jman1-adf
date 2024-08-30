@@ -12,17 +12,26 @@
 						"referenceName": "DS_SQL",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "UserInput"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_SQL",
 						"type": "DatasetReference"
 					},
-					"name": "source2"
+					"name": "UserRolesInput"
 				},
 				{
-					"name": "source3"
+					"name": "OrderInput"
+				},
+				{
+					"name": "source4"
+				},
+				{
+					"name": "source5"
+				},
+				{
+					"name": "source6"
 				}
 			],
 			"sinks": [],
@@ -31,13 +40,19 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1",
+				"     format: 'table') ~> UserInput",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source2",
+				"     format: 'table') ~> UserRolesInput",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source3"
+				"     validateSchema: false) ~> OrderInput",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> source4",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> source5",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> source6"
 			]
 		}
 	}
