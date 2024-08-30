@@ -29,10 +29,23 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "Prep Each Raw Table",
 				"type": "ForEach",
-				"dependsOn": [],
-				"userProperties": []
+				"dependsOn": [
+					{
+						"activity": "Fetch Table Names",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Fetch Table Names').output",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"annotations": []
