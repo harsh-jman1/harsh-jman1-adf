@@ -15,18 +15,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"wildcardFileName": "*.csv",
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
 					"sink": {
 						"type": "AzureSqlSink",
 						"writeBehavior": "insert",
@@ -41,341 +29,276 @@
 							{
 								"source": {
 									"name": "departmentCode",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "departmentCode",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "categoryCode",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "categoryCode",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "categoryName",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "categoryName",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "searchCategoryCode",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "searchCategoryCode",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "seriesCode",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "seriesCode",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "seriesName",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "seriesName",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "brandCode",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "brandCode",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "brandUrlCode",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "brandUrlCode",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "brandName",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "brandName",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "productImageList",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "productImageList",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "catchCopy",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "catchCopy",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "minPiecesPerPackage",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "minPiecesPerPackage",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "maxPiecesPerPackage",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "maxPiecesPerPackage",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "minStandardDaysToShip",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "minStandardDaysToShip",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "maxStandardDaysToShip",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "maxStandardDaysToShip",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "minStandardUnitPrice",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "minStandardUnitPrice",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "maxStandardUnitPrice",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "maxStandardUnitPrice",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "minPricePerPiece",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "minPricePerPiece",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "maxPricePerPiece",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "maxPricePerPiece",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "recommendFlag",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "recommendFlag",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "volumeDiscountFlag",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "volumeDiscountFlag",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "discontinuedProductFlag",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "discontinuedProductFlag",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "stock",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "stock",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "pageView",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "pageView",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "comparisonSpecValueList",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "comparisonSpecValueList",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "shaftPatternSpecValueList",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "shaftPatternSpecValueList",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "categoryList",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "categoryList",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "String"
 								}
 							}
-						],
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
+						]
 					}
 				},
-				"inputs": [
-					{
-						"referenceName": "DS_Blob_Input",
-						"type": "DatasetReference"
-					}
-				],
 				"outputs": [
 					{
 						"referenceName": "DS_SQL",
