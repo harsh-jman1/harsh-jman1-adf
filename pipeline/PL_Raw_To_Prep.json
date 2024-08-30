@@ -64,7 +64,10 @@
 									"type": "DataFlowReference",
 									"datasetParameters": {
 										"TableInput": {
-											"tableName": "@i"
+											"tableName": {
+												"value": "@item().name",
+												"type": "Expression"
+											}
 										}
 									}
 								},
