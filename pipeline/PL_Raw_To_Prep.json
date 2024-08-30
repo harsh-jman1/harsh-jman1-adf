@@ -88,6 +88,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "Full Stack"
+		},
 		"annotations": []
 	}
 }

@@ -1,5 +1,5 @@
 {
-	"name": "LocalToSQL",
+	"name": "PL_Local_To_SQL",
 	"properties": {
 		"description": "fetch the database from the local postgres server to azure sql server",
 		"activities": [
@@ -711,6 +711,9 @@
 					}
 				]
 			}
+		},
+		"folder": {
+			"name": "Full Stack"
 		},
 		"annotations": []
 	}
