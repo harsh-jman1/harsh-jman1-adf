@@ -28,7 +28,7 @@
 						"referenceName": "DS_SQL",
 						"type": "DatasetReference"
 					},
-					"name": "TableSink"
+					"name": "MostViewedSink"
 				}
 			],
 			"transformations": [
@@ -105,7 +105,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> TableSink"
+				"     errorHandlingOption: 'stopOnFirstError') ~> MostViewedSink"
 			]
 		}
 	}
