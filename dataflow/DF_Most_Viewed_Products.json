@@ -1,16 +1,27 @@
 {
-	"name": "DF_Generate_",
+	"name": "DF_Most_Viewed_Products",
 	"properties": {
 		"folder": {
 			"name": "Misumi"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "InputTable"
+				}
+			],
 			"sinks": [],
 			"transformations": [],
 			"scriptLines": [
-				""
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> InputTable"
 			]
 		}
 	}
