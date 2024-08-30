@@ -448,15 +448,16 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_Most_Viewed_Products",
+						"referenceName": "DF_Generate_Reports",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"InputTable": {
+							"AverageInput": {
 								"tableName": "product_details",
 								"tableSchema": "prep"
 							},
-							"sink1": {
-								"tableName": "most_viewed_products"
+							"TableSink": {
+								"tableName": "most_viewed_products",
+								"tableSchema": "reports"
 							}
 						}
 					},

@@ -1,5 +1,5 @@
 {
-	"name": "DF_Most_Viewed_Products",
+	"name": "DF_Generate_Reports",
 	"properties": {
 		"folder": {
 			"name": "Misumi"
@@ -12,7 +12,14 @@
 						"referenceName": "DS_SQL",
 						"type": "DatasetReference"
 					},
-					"name": "InputTable"
+					"name": "ViewRankInput"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "AverageInput"
 				}
 			],
 			"sinks": [
@@ -66,8 +73,12 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> InputTable",
-				"InputTable sort(desc(pageView, false),",
+				"     format: 'table') ~> ViewRankInput",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> AverageInput",
+				"ViewRankInput sort(desc(pageView, false),",
 				"     caseInsensitive: true) ~> SortByPageView",
 				"SortByPageView select(mapColumn(",
 				"          ID,",
