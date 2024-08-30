@@ -70,6 +70,9 @@
 				},
 				{
 					"name": "RemoveProductsWithNoDelivery"
+				},
+				{
+					"name": "SelectRequiredColumns"
 				}
 			],
 			"scriptLines": [
@@ -196,6 +199,29 @@
 				"AveragePrice alterRow(deleteIf(isNull(AveragePrice))) ~> RemoveProductsWithNoPrice",
 				"AverageDeliveryInput derive(AverageDeliveryDate = (toFloat(minStandardDaysToShip) +  toFloat(maxStandardDaysToShip) ) / 2.0) ~> AverageDeliveryDate",
 				"AverageDeliveryDate alterRow(deleteIf(isNull(AverageDeliveryDate))) ~> RemoveProductsWithNoDelivery",
+				"RemoveProductsWithNoPrice select(mapColumn(",
+				"          categoryName,",
+				"          seriesName,",
+				"          brandName,",
+				"          minStandardDaysToShip,",
+				"          maxStandardDaysToShip,",
+				"          minStandardUnitPrice,",
+				"          maxStandardUnitPrice,",
+				"          minPricePerPiece,",
+				"          maxPricePerPiece,",
+				"          recommendFlag,",
+				"          volumeDiscountFlag,",
+				"          discontinuedProductFlag,",
+				"          stock,",
+				"          pageView,",
+				"          comparisonSpecValueList,",
+				"          shaftPatternSpecValueList,",
+				"          categoryList,",
+				"          ID,",
+				"          AveragePrice",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectRequiredColumns",
 				"SelectColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -207,7 +233,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> MostViewedSink",
-				"RemoveProductsWithNoPrice sink(allowSchemaDrift: true,",
+				"SelectRequiredColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
