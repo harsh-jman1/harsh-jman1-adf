@@ -1,0 +1,17 @@
+{
+	"name": "DF_Generate_",
+	"properties": {
+		"folder": {
+			"name": "Misumi"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}
