@@ -59,7 +59,7 @@
 					"name": "RemoveProductsWithNoPrice"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "AverageDeliveryDate"
 				}
 			],
 			"scriptLines": [
@@ -154,7 +154,7 @@
 				"     skipDuplicateMapOutputs: true) ~> SelectColumns",
 				"AveragePriceInput derive(AveragePrice = (toFloat(minPricePerPiece) +  toFloat(maxPricePerPiece) ) / 2.0) ~> AveragePrice",
 				"AveragePrice alterRow(deleteIf(isNull(AveragePrice))) ~> RemoveProductsWithNoPrice",
-				"AverageDeliveryInput derive() ~> derivedColumn1",
+				"AverageDeliveryInput derive(AverageDeliveryDate = ERROR_FUNCTION('')) ~> AverageDeliveryDate",
 				"SelectColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
