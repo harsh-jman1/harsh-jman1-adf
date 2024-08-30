@@ -1,6 +1,61 @@
 {
 	"name": "PL_Generate_Combined_View",
 	"properties": {
+		"activities": [
+			{
+				"name": "DF_Merge_Views",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Merge_Views",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"OrderInput": {
+								"tableName": "Order",
+								"tableSchema": "prep"
+							},
+							"UserInput": {
+								"tableName": "User",
+								"tableSchema": "prep"
+							},
+							"UserRoleInput": {
+								"tableName": "UserRoles",
+								"tableSchema": "prep"
+							},
+							"EventInput": {
+								"tableName": "Event",
+								"tableSchema": "prep"
+							},
+							"CategoryInput": {
+								"tableName": "Category",
+								"tableSchema": "prep"
+							},
+							"RoleInput": {
+								"tableName": "Role",
+								"tableSchema": "prep"
+							},
+							"MergeViewSink": {
+								"tableSchema": "report"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
 		"folder": {
 			"name": "Full Stack"
 		},
