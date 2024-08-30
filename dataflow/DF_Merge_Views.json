@@ -50,7 +50,15 @@
 					"name": "RoleInput"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "JoinOrderAndUser"
@@ -194,20 +202,26 @@
 				"          location,",
 				"          image_url = imageUrl,",
 				"          start_date_time = startDateTime,",
-				"          endDateTime,",
+				"          end_date_time = endDateTime,",
 				"          price,",
 				"          isFree,",
 				"          url,",
-				"          categoryId,",
-				"          organizerId,",
-				"          isHidden,",
-				"          id = CategoryInput@id,",
+				"          is_hidden = isHidden,",
 				"          category = name,",
-				"          userId,",
 				"          category = Role",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> RemapColumns"
+				"     skipDuplicateMapOutputs: true) ~> RemapColumns",
+				"RemapColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
