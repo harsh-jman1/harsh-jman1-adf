@@ -30,11 +30,339 @@
 					"sink": {
 						"type": "AzureSqlSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "departmentCode",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "departmentCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "categoryCode",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "categoryCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "categoryName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "categoryName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "searchCategoryCode",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "searchCategoryCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "seriesCode",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "seriesCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "seriesName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "seriesName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "brandCode",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "brandCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "brandUrlCode",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "brandUrlCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "brandName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "brandName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "productImageList",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "productImageList",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "catchCopy",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "catchCopy",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "minPiecesPerPackage",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "minPiecesPerPackage",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "maxPiecesPerPackage",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "maxPiecesPerPackage",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "minStandardDaysToShip",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "minStandardDaysToShip",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "maxStandardDaysToShip",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "maxStandardDaysToShip",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "minStandardUnitPrice",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "minStandardUnitPrice",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "maxStandardUnitPrice",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "maxStandardUnitPrice",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "minPricePerPiece",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "minPricePerPiece",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "maxPricePerPiece",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "maxPricePerPiece",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "recommendFlag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "recommendFlag",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "volumeDiscountFlag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "volumeDiscountFlag",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "discontinuedProductFlag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "discontinuedProductFlag",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "stock",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "stock",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "pageView",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "pageView",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "comparisonSpecValueList",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "comparisonSpecValueList",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "shaftPatternSpecValueList",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "shaftPatternSpecValueList",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "categoryList",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "categoryList",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -51,7 +379,11 @@
 				"outputs": [
 					{
 						"referenceName": "DS_SQL",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"tableName": "product_details",
+							"tableSchema": "raw"
+						}
 					}
 				]
 			}
