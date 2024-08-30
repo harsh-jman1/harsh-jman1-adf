@@ -1218,6 +1218,49 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "DF_Most_Viewed_Products",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Clean Data",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_Most_Viewed_Products",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"InputTable": {
+										"tableName": "product_details",
+										"tableSchema": "prep"
+									},
+									"TableSink": {
+										"tableName": "most_viewed_products",
+										"tableSchema": "reports"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -1231,7 +1274,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_Blob_Input_Excel')]",
 				"[concat(variables('factoryId'), '/datasets/DS_SQL')]",
-				"[concat(variables('factoryId'), '/dataflows/DF_Clean_Raw_Data')]"
+				"[concat(variables('factoryId'), '/dataflows/DF_Clean_Raw_Data')]",
+				"[concat(variables('factoryId'), '/dataflows/DF_Most_Viewed_Products')]"
 			]
 		},
 		{
@@ -1694,14 +1738,151 @@
 							"name": "TableSink"
 						}
 					],
-					"transformations": [],
+					"transformations": [
+						{
+							"name": "HashColumns"
+						},
+						{
+							"name": "RemoveHashColumn"
+						},
+						{
+							"name": "IDColumnConstant"
+						},
+						{
+							"name": "UpdateRowID"
+						},
+						{
+							"name": "RemoveConstant"
+						}
+					],
 					"scriptLines": [
 						"source(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     limit: 100,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> TableInput",
-						"TableInput sink(allowSchemaDrift: true,",
+						"TableInput aggregate(groupBy(columns = sha2(256, columns())),",
+						"     each(match(true()), $$ = first($$))) ~> HashColumns",
+						"HashColumns select(mapColumn(",
+						"          each(match(name!='columns'))",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> RemoveHashColumn",
+						"RemoveHashColumn derive(IDConstant = 1) ~> IDColumnConstant",
+						"IDColumnConstant window(asc(IDConstant, true),",
+						"     ID = rowNumber()) ~> UpdateRowID",
+						"UpdateRowID select(mapColumn(",
+						"          each(match(name!='IDConstant'))",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> RemoveConstant",
+						"RemoveConstant sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> TableSink"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_SQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_Most_Viewed_Products')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Misumi"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "InputTable"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_SQL",
+								"type": "DatasetReference"
+							},
+							"name": "TableSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SortByPageView"
+						},
+						{
+							"name": "SelectColumns"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          departmentCode as string,",
+						"          categoryCode as string,",
+						"          categoryName as string,",
+						"          searchCategoryCode as string,",
+						"          seriesCode as string,",
+						"          seriesName as string,",
+						"          brandCode as string,",
+						"          brandUrlCode as string,",
+						"          brandName as string,",
+						"          productImageList as string,",
+						"          catchCopy as string,",
+						"          minPiecesPerPackage as string,",
+						"          maxPiecesPerPackage as string,",
+						"          minStandardDaysToShip as string,",
+						"          maxStandardDaysToShip as string,",
+						"          minStandardUnitPrice as string,",
+						"          maxStandardUnitPrice as string,",
+						"          minPricePerPiece as string,",
+						"          maxPricePerPiece as string,",
+						"          recommendFlag as string,",
+						"          volumeDiscountFlag as string,",
+						"          discontinuedProductFlag as string,",
+						"          stock as string,",
+						"          pageView as integer,",
+						"          comparisonSpecValueList as string,",
+						"          shaftPatternSpecValueList as string,",
+						"          categoryList as string,",
+						"          ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> InputTable",
+						"InputTable sort(desc(pageView, false),",
+						"     caseInsensitive: true) ~> SortByPageView",
+						"SortByPageView select(mapColumn(",
+						"          ID,",
+						"          categoryName,",
+						"          seriesName,",
+						"          brandName,",
+						"          minPricePerPiece,",
+						"          maxPricePerPiece,",
+						"          volumeDiscountFlag,",
+						"          discontinuedProductFlag,",
+						"          stock,",
+						"          pageView,",
+						"          categoryList",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectColumns",
+						"SelectColumns sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     deletable:false,",
 						"     insertable:true,",
