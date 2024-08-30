@@ -22,12 +22,24 @@
 					"name": "UserInput"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
 					"name": "UserRoleInput"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
 					"name": "EventInput"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
 					"name": "CategoryInput"
 				},
 				{
@@ -50,11 +62,17 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> UserInput",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> UserRoleInput",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> UserRoleInput",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> EventInput",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> EventInput",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> CategoryInput",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> CategoryInput",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
