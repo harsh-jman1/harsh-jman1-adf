@@ -29,7 +29,7 @@
 					"name": "HashColumns"
 				},
 				{
-					"name": "select1"
+					"name": "RemoveHashColumn"
 				}
 			],
 			"scriptLines": [
@@ -41,11 +41,12 @@
 				"TableInput aggregate(groupBy(columns = sha2(256, columns())),",
 				"     each(match(true()), $$ = first($$))) ~> HashColumns",
 				"HashColumns select(mapColumn(",
-				"          columns",
+				"          each(match(name!=columns),",
+				"               ERROR_FUNCTION('') = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveHashColumn",
+				"RemoveHashColumn sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
