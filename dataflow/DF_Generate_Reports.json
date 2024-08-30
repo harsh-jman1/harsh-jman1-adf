@@ -20,6 +20,9 @@
 						"type": "DatasetReference"
 					},
 					"name": "AveragePriceInput"
+				},
+				{
+					"name": "source1"
 				}
 			],
 			"sinks": [
@@ -29,6 +32,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "MostViewedSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "AveragePriceSink"
 				}
 			],
 			"transformations": [
@@ -42,7 +52,7 @@
 					"name": "AveragePrice"
 				},
 				{
-					"name": "alterRow1"
+					"name": "RemoveProductsWithNoPrice"
 				}
 			],
 			"scriptLines": [
@@ -114,6 +124,8 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> AveragePriceInput",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> source1",
 				"ViewRankInput sort(desc(pageView, false),",
 				"     caseInsensitive: true) ~> SortByPageView",
 				"SortByPageView select(mapColumn(",
@@ -132,7 +144,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectColumns",
 				"AveragePriceInput derive(AveragePrice = (toFloat(minPricePerPiece) +  toFloat(maxPricePerPiece) ) / 2.0) ~> AveragePrice",
-				"AveragePrice alterRow() ~> alterRow1",
+				"AveragePrice alterRow(deleteIf(isNull(AveragePrice))) ~> RemoveProductsWithNoPrice",
 				"SelectColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -143,7 +155,17 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> MostViewedSink"
+				"     errorHandlingOption: 'stopOnFirstError') ~> MostViewedSink",
+				"RemoveProductsWithNoPrice sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> AveragePriceSink"
 			]
 		}
 	}

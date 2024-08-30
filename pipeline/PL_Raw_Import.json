@@ -451,11 +451,11 @@
 						"referenceName": "DF_Generate_Reports",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"AverageInput": {
+							"AveragePriceInput": {
 								"tableName": "product_details",
 								"tableSchema": "prep"
 							},
-							"TableSink": {
+							"MostViewedSink": {
 								"tableName": "most_viewed_products",
 								"tableSchema": "reports"
 							}
