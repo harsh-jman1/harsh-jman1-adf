@@ -22,7 +22,11 @@
 					"name": "AveragePriceInput"
 				},
 				{
-					"name": "source1"
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "AverageDeliveryInput"
 				}
 			],
 			"sinks": [
@@ -125,7 +129,9 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> AveragePriceInput",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> AverageDeliveryInput",
 				"ViewRankInput sort(desc(pageView, false),",
 				"     caseInsensitive: true) ~> SortByPageView",
 				"SortByPageView select(mapColumn(",
