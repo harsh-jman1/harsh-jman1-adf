@@ -59,6 +59,15 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
+								"dataflow": {
+									"referenceName": "DF_Prepare_Data_From_Raw",
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"TableInput": {
+											"tableName": "@i"
+										}
+									}
+								},
 								"compute": {
 									"coreCount": 8,
 									"computeType": "General"
