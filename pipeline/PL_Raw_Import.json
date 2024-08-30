@@ -413,6 +413,10 @@
 							"TableInput": {
 								"tableName": "product_details",
 								"tableSchema": "raw"
+							},
+							"TableSink": {
+								"tableName": "product_details",
+								"tableSchema": "prep"
 							}
 						}
 					},
