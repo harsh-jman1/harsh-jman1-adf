@@ -69,6 +69,13 @@
 												"type": "Expression"
 											},
 											"tableSchema": "raw"
+										},
+										"TableOutput": {
+											"tableName": {
+												"value": "@item().name",
+												"type": "Expression"
+											},
+											"tableSchema": "prep"
 										}
 									}
 								},
