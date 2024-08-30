@@ -21,11 +21,18 @@
 				"typeProperties": {
 					"scripts": [
 						{
-							"type": "Query"
+							"type": "Query",
+							"text": "SELECT t.name \n  FROM sys.tables AS t\n  INNER JOIN sys.schemas AS s\n  ON t.[schema_id] = s.[schema_id]\n  WHERE s.name = N'raw';"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
 				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": []
 			}
 		],
 		"annotations": []
