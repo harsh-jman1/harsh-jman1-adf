@@ -389,6 +389,8 @@
 			{
 				"name": "Clean Data",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy From Blob",
@@ -451,6 +453,10 @@
 						"referenceName": "DF_Generate_Reports",
 						"type": "DataFlowReference",
 						"datasetParameters": {
+							"ViewRankInput": {
+								"tableName": "product_details",
+								"tableSchema": "prep"
+							},
 							"AveragePriceInput": {
 								"tableName": "product_details",
 								"tableSchema": "prep"
