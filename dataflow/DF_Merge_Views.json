@@ -57,6 +57,9 @@
 				},
 				{
 					"name": "JoinEvent"
+				},
+				{
+					"name": "JoinCategory"
 				}
 			],
 			"scriptLines": [
@@ -136,11 +139,16 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinOrderAndUser",
-				"JoinOrderAndUser, EventInput join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"JoinOrderAndUser, EventInput join(eventId == EventInput@id,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> JoinEvent"
+				"     broadcast: 'auto')~> JoinEvent",
+				"JoinEvent, CategoryInput join(categoryId == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinCategory"
 			]
 		}
 	}
