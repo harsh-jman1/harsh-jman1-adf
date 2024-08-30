@@ -27,6 +27,9 @@
 			"transformations": [
 				{
 					"name": "HashColumns"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -36,8 +39,13 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TableInput",
 				"TableInput aggregate(groupBy(columns = sha2(256, columns())),",
-				"     column1 = ERROR_FUNCTION('')) ~> HashColumns",
-				"HashColumns sink(allowSchemaDrift: true,",
+				"     each(match(true()), $$ = first($$))) ~> HashColumns",
+				"HashColumns select(mapColumn(",
+				"          columns",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
