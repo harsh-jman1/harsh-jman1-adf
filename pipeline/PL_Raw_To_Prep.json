@@ -68,12 +68,6 @@
 												"value": "@item().name",
 												"type": "Expression"
 											}
-										},
-										"TableOutput": {
-											"sinkTableName": {
-												"value": "@item().name",
-												"type": "Expression"
-											}
 										}
 									}
 								},

@@ -39,7 +39,13 @@
 								"source": {
 									"type": "PostgreSqlV2Source"
 								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false
+								},
 								"enableStaging": false,
+								"validateDataConsistency": false,
 								"translator": {
 									"value": "@item().copyActivity.translator",
 									"type": "Expression"
@@ -52,6 +58,12 @@
 									"parameters": {
 										"cw_table": "@item().source.table"
 									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_SQL",
+									"type": "DatasetReference"
 								}
 							]
 						}
