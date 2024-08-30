@@ -8,13 +8,19 @@
 		"parameters": {
 			"tableName": {
 				"type": "string"
+			},
+			"tableSchema": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "raw",
+			"schema": {
+				"value": "@dataset().tableSchema",
+				"type": "Expression"
+			},
 			"table": {
 				"value": "@dataset().tableName",
 				"type": "Expression"

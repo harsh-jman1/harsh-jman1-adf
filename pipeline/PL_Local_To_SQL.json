@@ -39,12 +39,7 @@
 								"source": {
 									"type": "PostgreSqlV2Source"
 								},
-								"sink": {
-									"type": "AzureSqlSink",
-									"tableOption": "autoCreate"
-								},
 								"enableStaging": false,
-								"validateDataConsistency": false,
 								"translator": {
 									"value": "@item().copyActivity.translator",
 									"type": "Expression"
@@ -56,15 +51,6 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"cw_table": "@item().source.table"
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "DestinationDataset_ek5",
-									"type": "DatasetReference",
-									"parameters": {
-										"cw_table": "@item().destination.table"
 									}
 								}
 							]
