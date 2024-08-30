@@ -1,0 +1,131 @@
+{
+	"name": "DS_Blob_Input",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_InvoiceBlob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "misumi"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "departmentCode",
+				"type": "String"
+			},
+			{
+				"name": "categoryCode",
+				"type": "String"
+			},
+			{
+				"name": "categoryName",
+				"type": "String"
+			},
+			{
+				"name": "searchCategoryCode",
+				"type": "String"
+			},
+			{
+				"name": "seriesCode",
+				"type": "String"
+			},
+			{
+				"name": "seriesName",
+				"type": "String"
+			},
+			{
+				"name": "brandCode",
+				"type": "String"
+			},
+			{
+				"name": "brandUrlCode",
+				"type": "String"
+			},
+			{
+				"name": "brandName",
+				"type": "String"
+			},
+			{
+				"name": "productImageList",
+				"type": "String"
+			},
+			{
+				"name": "catchCopy",
+				"type": "String"
+			},
+			{
+				"name": "minPiecesPerPackage",
+				"type": "String"
+			},
+			{
+				"name": "maxPiecesPerPackage",
+				"type": "String"
+			},
+			{
+				"name": "minStandardDaysToShip",
+				"type": "String"
+			},
+			{
+				"name": "maxStandardDaysToShip",
+				"type": "String"
+			},
+			{
+				"name": "minStandardUnitPrice",
+				"type": "String"
+			},
+			{
+				"name": "maxStandardUnitPrice",
+				"type": "String"
+			},
+			{
+				"name": "minPricePerPiece",
+				"type": "String"
+			},
+			{
+				"name": "maxPricePerPiece",
+				"type": "String"
+			},
+			{
+				"name": "recommendFlag",
+				"type": "String"
+			},
+			{
+				"name": "volumeDiscountFlag",
+				"type": "String"
+			},
+			{
+				"name": "discontinuedProductFlag",
+				"type": "String"
+			},
+			{
+				"name": "stock",
+				"type": "String"
+			},
+			{
+				"name": "pageView",
+				"type": "String"
+			},
+			{
+				"name": "comparisonSpecValueList",
+				"type": "String"
+			},
+			{
+				"name": "shaftPatternSpecValueList",
+				"type": "String"
+			},
+			{
+				"name": "categoryList",
+				"type": "String"
+			}
+		]
+	}
+}
