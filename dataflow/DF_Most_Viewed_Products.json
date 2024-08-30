@@ -16,18 +16,12 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [
-				{
-					"name": "SortByViews"
-				}
-			],
+			"transformations": [],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> InputTable",
-				"InputTable sort(asc(pageView, false),",
-				"     caseInsensitive: true) ~> SortByViews"
+				"     format: 'table') ~> InputTable"
 			]
 		}
 	}
