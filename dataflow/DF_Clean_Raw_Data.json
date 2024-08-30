@@ -36,6 +36,9 @@
 				},
 				{
 					"name": "UpdateRowID"
+				},
+				{
+					"name": "RemoveConstant"
 				}
 			],
 			"scriptLines": [
@@ -51,10 +54,15 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> RemoveHashColumn",
-				"RemoveHashColumn derive(ID = 1) ~> IDColumnConstant",
-				"IDColumnConstant window(asc(ID, true),",
+				"RemoveHashColumn derive(IDConstant = 1) ~> IDColumnConstant",
+				"IDColumnConstant window(asc(IDConstant, true),",
 				"     ID = rowNumber()) ~> UpdateRowID",
-				"UpdateRowID sink(allowSchemaDrift: true,",
+				"UpdateRowID select(mapColumn(",
+				"          each(match(name!='IDConstant'))",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveConstant",
+				"RemoveConstant sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
