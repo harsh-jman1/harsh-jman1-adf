@@ -12,26 +12,30 @@
 						"referenceName": "DS_SQL",
 						"type": "DatasetReference"
 					},
-					"name": "UserInput"
+					"name": "OrderInput"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_SQL",
 						"type": "DatasetReference"
 					},
-					"name": "UserRolesInput"
+					"name": "UserInput"
 				},
 				{
-					"name": "OrderInput"
+					"name": "UserRoleInput"
 				},
 				{
-					"name": "source4"
+					"name": "EventInput"
 				},
 				{
-					"name": "source5"
+					"name": "CategoryInput"
 				},
 				{
-					"name": "source6"
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "RoleInput"
 				}
 			],
 			"sinks": [],
@@ -40,19 +44,21 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> UserInput",
+				"     format: 'table') ~> OrderInput",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> UserRolesInput",
+				"     format: 'table') ~> UserInput",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> OrderInput",
+				"     validateSchema: false) ~> UserRoleInput",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source4",
+				"     validateSchema: false) ~> EventInput",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source5",
+				"     validateSchema: false) ~> CategoryInput",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source6"
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> RoleInput"
 			]
 		}
 	}
