@@ -15,6 +15,15 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*.csv",
+							"enablePartitionDiscovery": false
+						}
+					},
 					"sink": {
 						"type": "AzureSqlSink",
 						"writeBehavior": "insert",
@@ -25,280 +34,19 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"name": "departmentCode",
-									"type": "String"
-								},
-								"sink": {
-									"name": "departmentCode",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "categoryCode",
-									"type": "String"
-								},
-								"sink": {
-									"name": "categoryCode",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "categoryName",
-									"type": "String"
-								},
-								"sink": {
-									"name": "categoryName",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "searchCategoryCode",
-									"type": "String"
-								},
-								"sink": {
-									"name": "searchCategoryCode",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "seriesCode",
-									"type": "String"
-								},
-								"sink": {
-									"name": "seriesCode",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "seriesName",
-									"type": "String"
-								},
-								"sink": {
-									"name": "seriesName",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "brandCode",
-									"type": "String"
-								},
-								"sink": {
-									"name": "brandCode",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "brandUrlCode",
-									"type": "String"
-								},
-								"sink": {
-									"name": "brandUrlCode",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "brandName",
-									"type": "String"
-								},
-								"sink": {
-									"name": "brandName",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "productImageList",
-									"type": "String"
-								},
-								"sink": {
-									"name": "productImageList",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "catchCopy",
-									"type": "String"
-								},
-								"sink": {
-									"name": "catchCopy",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "minPiecesPerPackage",
-									"type": "String"
-								},
-								"sink": {
-									"name": "minPiecesPerPackage",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "maxPiecesPerPackage",
-									"type": "String"
-								},
-								"sink": {
-									"name": "maxPiecesPerPackage",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "minStandardDaysToShip",
-									"type": "String"
-								},
-								"sink": {
-									"name": "minStandardDaysToShip",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "maxStandardDaysToShip",
-									"type": "String"
-								},
-								"sink": {
-									"name": "maxStandardDaysToShip",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "minStandardUnitPrice",
-									"type": "String"
-								},
-								"sink": {
-									"name": "minStandardUnitPrice",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "maxStandardUnitPrice",
-									"type": "String"
-								},
-								"sink": {
-									"name": "maxStandardUnitPrice",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "minPricePerPiece",
-									"type": "String"
-								},
-								"sink": {
-									"name": "minPricePerPiece",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "maxPricePerPiece",
-									"type": "String"
-								},
-								"sink": {
-									"name": "maxPricePerPiece",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "recommendFlag",
-									"type": "String"
-								},
-								"sink": {
-									"name": "recommendFlag",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "volumeDiscountFlag",
-									"type": "String"
-								},
-								"sink": {
-									"name": "volumeDiscountFlag",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "discontinuedProductFlag",
-									"type": "String"
-								},
-								"sink": {
-									"name": "discontinuedProductFlag",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "stock",
-									"type": "String"
-								},
-								"sink": {
-									"name": "stock",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "pageView",
-									"type": "String"
-								},
-								"sink": {
-									"name": "pageView",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "comparisonSpecValueList",
-									"type": "String"
-								},
-								"sink": {
-									"name": "comparisonSpecValueList",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "shaftPatternSpecValueList",
-									"type": "String"
-								},
-								"sink": {
-									"name": "shaftPatternSpecValueList",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "categoryList",
-									"type": "String"
-								},
-								"sink": {
-									"name": "categoryList",
-									"type": "String"
-								}
-							}
-						]
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
 					}
 				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_Input_Excel",
+						"type": "DatasetReference"
+					}
+				],
 				"outputs": [
 					{
 						"referenceName": "DS_SQL",
